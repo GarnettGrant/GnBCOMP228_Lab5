@@ -14,11 +14,12 @@ public class DatabaseController {
 
     //Database variables;
     static String myDriver = "com.mysql.jdbc.Driver";
-    static String myUrl = "jdbc:oracle:thin:@oracle1.centennialcollege.ca:1521:SQLD";
+    static String myUrl = "jdbc:oracle:thin:@199.212.26.208:1521:SQLD";
     static Connection conn ;
 
     public static void InsertPlayer(Player newPlayer) {
         try {
+            int id = 0;
             OpenDatabaseConnection();
 
             Statement st = conn.createStatement();
@@ -27,13 +28,15 @@ public class DatabaseController {
             String query = String.format("Insert into player (first_name, last_name, address, postal_code, province, phone_number) values ('%s', '%s')", newPlayer.getFirstName(), newPlayer.getLastName(), newPlayer.getAddress(), newPlayer.getPostal_Code(), newPlayer.getProvince(), newPlayer.getPhone());
 
             // New Prepared  Query Statement
-            PreparedStatement pst = conn.prepareStatement("Insert into player (first_name, last_name, address, postal_code, province, phone_number) values (?,?,?,?,?,?)");
-            pst.setString(1, newPlayer.getFirstName());
-            pst.setString(2, newPlayer.getLastName());
-            pst.setString(3, newPlayer.getAddress());
-            pst.setString(4, newPlayer.getPostal_Code());
-            pst.setString(5, newPlayer.getProvince());
-            pst.setString(6, newPlayer.getPhone());
+            PreparedStatement pst = conn.prepareStatement("Insert into player (player_id, first_name, last_name, address, postal_code, province, phone_number) values (?,?,?,?,?,?,?)");
+            pst.setString(1, String.valueOf(id));
+            pst.setString(2, newPlayer.getFirstName());
+            pst.setString(3, newPlayer.getLastName());
+            pst.setString(4, newPlayer.getAddress());
+            pst.setString(5, newPlayer.getPostal_Code());
+            pst.setString(6, newPlayer.getProvince());
+            pst.setString(7, newPlayer.getPhone());
+
             int i = pst.executeUpdate();
 
             CloseDatabaseConnection();
