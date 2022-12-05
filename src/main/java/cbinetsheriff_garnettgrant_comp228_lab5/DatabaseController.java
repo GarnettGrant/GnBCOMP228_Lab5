@@ -14,12 +14,13 @@ public class DatabaseController {
 
     //Database variables;
     static String myDriver = "com.mysql.jdbc.Driver";
-    static String myUrl = "jdbc:oracle:thin:@199.212.26.208:1521:SQLD";
+    static String myUrl = "jdbc:oracle:thin:@oracle1.centennialcollege.ca:1521:SQLD";
     static Connection conn ;
+
 
     public static void InsertPlayer(Player newPlayer) {
         try {
-            int id = 0;
+
             OpenDatabaseConnection();
 
             Statement st = conn.createStatement();
@@ -28,17 +29,15 @@ public class DatabaseController {
             String query = String.format("Insert into player (first_name, last_name, address, postal_code, province, phone_number) values ('%s', '%s')", newPlayer.getFirstName(), newPlayer.getLastName(), newPlayer.getAddress(), newPlayer.getPostal_Code(), newPlayer.getProvince(), newPlayer.getPhone());
 
             // New Prepared  Query Statement
-            PreparedStatement pst = conn.prepareStatement("Insert into player (player_id, first_name, last_name, address, postal_code, province, phone_number) values (?,?,?,?,?,?,?)");
-            pst.setString(1, String.valueOf(id));
-            pst.setString(2, newPlayer.getFirstName());
-            pst.setString(3, newPlayer.getLastName());
-            pst.setString(4, newPlayer.getAddress());
-            pst.setString(5, newPlayer.getPostal_Code());
-            pst.setString(6, newPlayer.getProvince());
-            pst.setString(7, newPlayer.getPhone());
+            PreparedStatement pst = conn.prepareStatement("Insert into player (first_name, last_name, address, postal_code, province, phone_number) values (?,?,?,?,?,?)");
+            pst.setString(1, newPlayer.getFirstName());
+            pst.setString(2, newPlayer.getLastName());
+            pst.setString(3, newPlayer.getAddress());
+            pst.setString(4, newPlayer.getPostal_Code());
+            pst.setString(5, newPlayer.getProvince());
+            pst.setString(6, newPlayer.getPhone());
 
             int i = pst.executeUpdate();
-
             CloseDatabaseConnection();
 
             UpdatePlayersList();
@@ -73,7 +72,7 @@ public class DatabaseController {
 
             Statement st = conn.createStatement();
 
-            String query = String.format("Insert into playerandgame (game_id, player_id, playing_date, score) values (%d, %d, '%s', %s )", newStat.getGameID(), newStat.getPlayerID(), newStat.getPlayDate().toString(), Double.toString(newStat.getScore()));
+            String query = String.format("Insert into player_and_game (game_id, player_id, playing_date, score) values (%d, %d, '%s', %s )", newStat.getGameID(), newStat.getPlayerID(), newStat.getPlayDate().toString(), Double.toString(newStat.getScore()));
             // execute the query, and get a java result set
             st.executeUpdate(query);
 
@@ -156,6 +155,7 @@ public class DatabaseController {
     public static void UpdateGamesList(){
 
         games = UpdateList("select * from game", DatabaseTypes.game);
+        System.out.println(games);
 
     }
 
@@ -164,7 +164,7 @@ public class DatabaseController {
     }
 
     public static void UpdateGameStatsList(){
-        stats = UpdateList("select * from playerandgame", DatabaseTypes.stats);
+        stats = UpdateList("select * from player_and_game", DatabaseTypes.stats);
 
     }
 
@@ -190,16 +190,19 @@ public class DatabaseController {
 
                 switch (type){
                     case game:
-                        Game newGame = new Game(rs.getInt("game_id"), rs.getString("game_title"));
+                        Game newGame = new Game(rs.getInt("g_id"), rs.getString("game_title"));
                         databaseObjects.add(newGame);
+                        System.out.println(databaseObjects);
                         break;
                     case player:
                         Player newPlayer = new Player(rs.getInt("player_id"), rs.getString("first_name"), rs.getString("last_name"),rs.getString("address"),rs.getString("postal_code"),rs.getString("province"),rs.getString("phone_number"));
                         databaseObjects.add(newPlayer);
+                        System.out.println(databaseObjects);
                         break;
                     case stats:
                         GameStat newStat = new GameStat(rs.getInt("player_game_id"), rs.getInt("player_id"), rs.getInt("game_id"), new SimpleDateFormat("yyyy-MM-dd").format(rs.getDate("playing_date")) , rs.getDouble("score"));
                         databaseObjects.add(newStat);
+                        System.out.println(databaseObjects);
                         break;
                 }
             }
